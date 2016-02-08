@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For IftttMakerArduino
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+IftttMaker	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+fireEvent	KEYWORD2
+connectToWifi	KEYWORD2
+initialize	KEYWORD2
+debugPrint KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
