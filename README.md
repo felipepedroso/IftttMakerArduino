@@ -27,4 +27,4 @@ void loop() {
 
 # Known issues
 
-Since this code was developed using an Intel Edison with a Grove Starter Kit Plus, I'm using some functions to debug information to a LCD display. I promise that I'll remove this dependency in the future. 
+Need to abstract the network interface to use WiFi or Ethernet.

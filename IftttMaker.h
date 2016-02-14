@@ -6,7 +6,6 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include "rgb_lcd.h"
 
 #define IFTTT_SERVER "maker.ifttt.com"
 
