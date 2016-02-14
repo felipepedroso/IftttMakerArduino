@@ -6,19 +6,19 @@
 void IftttMaker::initialize(char* makerChannelKey){
     _makerChannelKey = makerChannelKey;
     
-    lcd.begin(16, 2);
-    debugPrint("Initializing", "Arduino + IFFFT");
-    delay(1000);
+    Serial.begin(115200);
+    Serial.println("Initializing Arduino + IFFFT");
 }
 
 void IftttMaker::connectToWifi(char* ssid, char* password){
     while (wifiStatus != WL_CONNECTED) {
         wifiStatus = WiFi.begin(ssid, password);
-        debugPrint("Connecting to", ssid);
+		String message = "Connecting to " + String(ssid);
+        Serial.println(message);
         delay(1000);
     }
     
-    debugPrint("Connected!");
+    Serial.println("Connected!");
     delay(500);
 }
 
@@ -48,7 +48,7 @@ void IftttMaker::makeGetRequest(char* server, int port, char* page) {
 
     if(!isConnected()){
         // TODO: find a better way to log this situation
-        debugPrint("Please check", "wifi connection.");
+        Serial.println("Please check the WiFi connection.");
         return;
     }
 
@@ -71,7 +71,7 @@ void IftttMaker::makePostRequest(char* server, int port, char* page, char* data)
 
     if(!isConnected()){
         // TODO: find a better way to log this situation
-        debugPrint("Please check", "wifi connection.");
+        Serial.println("Please check the WiFi connection.");
         return;
     }
 
@@ -93,16 +93,4 @@ void IftttMaker::makePostRequest(char* server, int port, char* page, char* data)
     // Ignoring the answer for a while. If you want to check if the message was received you need to parse the HTTP answer.
 
     _client.stop();
-}
-
-void IftttMaker::debugPrint(char* message) { // Was written using the Grove kit, feel free to replace for your favorite debug method.
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(message);
-}
-
-void IftttMaker::debugPrint(char* line0, char* line1) {
-  debugPrint(line0);
-  lcd.setCursor(0, 1);
-  lcd.print(line1);
 }

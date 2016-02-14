@@ -17,8 +17,6 @@ class IftttMaker
     void connectToWifi(char*, char*);
     void fireEvent(char*);
     void fireEvent(char*, char*, char*, char*);
-    void debugPrint(char*);
-    void debugPrint(char*, char*);
     
   private:
     char* _makerChannelKey;
