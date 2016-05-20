@@ -106,11 +106,6 @@ void IftttMaker::makePostRequest(char* server, int port, char* page, char* data)
         sprintf(strBuffer, "Host: %s", server);
         clientPrintln(strBuffer);
 
-        /*if (_isEthernet) {
-			_ethernetClient.println(F("Connection: close\r\nContent-Type: application/json"));
-		} else {
-		}*/
-
 		clientPrintln(F("Connection: close\r\nContent-Type: application/json"));
         
 		sprintf(strBuffer, "Content-Length: %u\r\n", strlen(data));
