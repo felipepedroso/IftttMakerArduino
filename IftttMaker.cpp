@@ -11,6 +11,7 @@ void IftttMaker::initialize(char* makerChannelKey){
 }
 
 void IftttMaker::connectToWifi(char* ssid, char* password){
+	_isEthernet = false;
     while (wifiStatus != WL_CONNECTED) {
         wifiStatus = WiFi.begin(ssid, password);
 		String message = "Connecting to " + String(ssid);
@@ -22,14 +23,43 @@ void IftttMaker::connectToWifi(char* ssid, char* password){
     delay(500);
 }
 
-bool IftttMaker::isConnected(){
-    return WiFi.status() == WL_CONNECTED;
+void IftttMaker::connectToEthernet(byte* mac){
+	_isEthernet = true;
+	if (Ethernet.begin(mac) == 0) {
+		Serial.println("Failed to configure Ethernet using DHCP. Try IP address instead.");
+		return;
+	}
+	Serial.println("Connecting to Ethernet");
+	delay(1000);
+	
+	if (clientConnect(IFTTT_SERVER, IFTTT_PORT)) {
+        Serial.println("Ethernet is working");
+		clientStop();
+    } else {
+		Serial.println("Please check connection.");
+	}
+}
+
+void IftttMaker::connectToEthernet(byte* mac, IPAddress ip){
+	_isEthernet = true;
+	Ethernet.begin(mac, ip);
+	Serial.println("Connecting to Ethernet");
+	delay(1000);
+	
+	if (clientConnect(IFTTT_SERVER, IFTTT_PORT)) {
+        Serial.println("Ethernet is working");
+		clientStop();
+	} else {
+		Serial.println("Please check connection.");
+	}
 }
 
 void IftttMaker::fireEvent(char* eventName){
     char iftttPage[128];
     sprintf(iftttPage, "/trigger/%s/with/key/%s", eventName, _makerChannelKey);
     makeGetRequest(IFTTT_SERVER, IFTTT_PORT, iftttPage);
+	
+	Serial.println("Get requested.");
 }
 
 void IftttMaker::fireEvent(char* eventName, char* value1, char* value2, char* value3){
@@ -41,56 +71,89 @@ void IftttMaker::fireEvent(char* eventName, char* value1, char* value2, char* va
     sprintf(jsonValues, "{ \"value1\" : \"%s\", \"value2\" : \"%s\", \"value3\" : \"%s\" }", value1, value2, value3);
 
     makePostRequest(IFTTT_SERVER, IFTTT_PORT, iftttPage, jsonValues);
+	
+	Serial.println("Post requested.");
 }
 
 void IftttMaker::makeGetRequest(char* server, int port, char* page) {
     char strBuffer[128];
 
-    if(!isConnected()){
-        // TODO: find a better way to log this situation
-        Serial.println("Please check the WiFi connection.");
-        return;
-    }
-
-    if (_client.connect(server, port)) {
+	 if (clientConnect(server, port)) {
         sprintf(strBuffer, "GET %s HTTP/1.1", page);
-        _client.println(strBuffer);
+        clientPrintln(strBuffer);
 
         sprintf(strBuffer, "Host: %s", server);
-        _client.println(strBuffer);
+        clientPrintln(strBuffer);
 
-        _client.println("Connection: close\r\n");
-    }
-
+        clientPrintln("Connection: close\r\n");
+    } else {
+		Serial.println("Please check connection.");
+	}
+	
     // Ignoring the answer for a while. If you want to check if the message was received you need to parse the HTTP answer.
-    _client.stop();
+	clientStop();
+	
 }
 
 void IftttMaker::makePostRequest(char* server, int port, char* page, char* data) {
-    char strBuffer[512];
+    char strBuffer[128];
 
-    if(!isConnected()){
-        // TODO: find a better way to log this situation
-        Serial.println("Please check the WiFi connection.");
-        return;
-    }
-
-    if (_client.connect(server, port)) {
+    if (clientConnect(server, port)) {
         sprintf(strBuffer, "POST %s HTTP/1.1", page);
-        _client.println(strBuffer);
+        clientPrintln(strBuffer);
 
         sprintf(strBuffer, "Host: %s", server);
-        _client.println(strBuffer);
+        clientPrintln(strBuffer);
 
-        _client.println(F("Connection: close\r\nContent-Type: application/json"));
+        /*if (_isEthernet) {
+			_ethernetClient.println(F("Connection: close\r\nContent-Type: application/json"));
+		} else {
+			_wifiClient.println(F("Connection: close\r\nContent-Type: application/json"));
+		}*/
 
-        sprintf(strBuffer, "Content-Length: %u\r\n", strlen(data));
-        _client.println(strBuffer);
+		clientPrintln(F("Connection: close\r\nContent-Type: application/json"));
+        
+		sprintf(strBuffer, "Content-Length: %u\r\n", strlen(data));
+        clientPrintln(strBuffer);
 
-        _client.print(data);
-    }
+        clientPrintln(data);
+    } else {
+		Serial.println("Please check connection.");
+	}
 
     // Ignoring the answer for a while. If you want to check if the message was received you need to parse the HTTP answer.
 
-    _client.stop();
+    clientStop();
+}
+
+void IftttMaker::clientPrintln(const __FlashStringHelper * toPrint) {
+	if (_isEthernet) {
+		_ethernetClient.println(toPrint);
+	} else {
+		_wifiClient.println(toPrint);
+	}
+}
+
+void IftttMaker::clientPrintln(char* toPrint) {
+	if (_isEthernet) {
+		_ethernetClient.println(toPrint);
+	} else {
+		_wifiClient.println(toPrint);
+	}
+}
+
+int IftttMaker::clientConnect(char* server, int port) {
+	if (_isEthernet) { 
+		return _ethernetClient.connect(server, port);
+	} else {
+		return _wifiClient.connect(server, port);
+	}
+}
+
+void IftttMaker::clientStop() {
+	if (_isEthernet) {
+		_ethernetClient.stop();
+	} else {
+		_wifiClient.stop();
+	}
 }

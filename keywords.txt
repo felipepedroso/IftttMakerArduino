@@ -6,16 +6,17 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-IftttMaker	KEYWORD1
+IftttMaker		KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-fireEvent	KEYWORD2
-connectToWifi	KEYWORD2
-initialize	KEYWORD2
-debugPrint KEYWORD2
+fireEvent		KEYWORD2
+connectToWifi		KEYWORD2
+connectToEthernet	KEYWORD2
+initialize		KEYWORD2
+debugPrint 		KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

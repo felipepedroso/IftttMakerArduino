@@ -8,11 +8,16 @@ Declare your IftttMaker object:
 ```cpp
 IftttMaker iftttMaker;
 ```
-Initialize your API key and Wifi settings:
+Initialize your API key and Wifi or Ethernet settings:
 ```cpp
+// Ethernet parameters
+byte mac[] = { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
+
+// IPAddress ip(192, 168, 0, 148);
 void setup() {
   iftttMaker.initialize("makerChannelKey");
-  iftttMaker.connectToWifi("SSID", "PASSWORD");
+  //iftttMaker.connectToWifi("SSID", "PASSWORD");
+  iftttMaker.connectToEthernet(mac);
 }
 ```
 
@@ -27,4 +32,4 @@ void loop() {
 
 # Known issues
 
-Need to abstract the network interface to use WiFi or Ethernet.
+Need to improve the connection verification.
