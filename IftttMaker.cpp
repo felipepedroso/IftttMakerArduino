@@ -1,5 +1,6 @@
 /*
 *	Created by Felipe Augusto Pedroso, February 08, 2016.
+*	Modified by Paulo Leonel Teixeira. May 18, 2016.
 */
 #include "IftttMaker.h"
 
@@ -104,12 +105,6 @@ void IftttMaker::makePostRequest(char* server, int port, char* page, char* data)
 
         sprintf(strBuffer, "Host: %s", server);
         clientPrintln(strBuffer);
-
-        /*if (_isEthernet) {
-			_ethernetClient.println(F("Connection: close\r\nContent-Type: application/json"));
-		} else {
-			_wifiClient.println(F("Connection: close\r\nContent-Type: application/json"));
-		}*/
 
 		clientPrintln(F("Connection: close\r\nContent-Type: application/json"));
         
